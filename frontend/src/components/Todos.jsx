@@ -1,9 +1,15 @@
-export function Todos() {
+// here we are using the object destructuring and todos will be an array
+export function Todos( {todos}) {
     return (
         <>
-            <h1>Go to Gym</h1>
-            <h3>Fitness is my Secret</h3>
-            <button>Mark as Completed</button>
+            {todos.map((todo , index) => (
+
+                <div key={index}>
+                    <h1>{todo.title}</h1>
+                    <h3>{todo.description}</h3>
+                    <button>{(todo.completed == true) ? "Complete": "Mark as Complete"}</button>
+                </div>
+        ))}
         </>
     )
 }
