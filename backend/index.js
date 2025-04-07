@@ -1,6 +1,7 @@
 // here creating the basic express boilerplate code , with express.json() middleware 
 const express = require('express');
 const { createTodo, updateTodo } = require('./types');
+const { todo, todo } = require('./db');
 const app = express();
 const PORT = 3001;
 
@@ -12,7 +13,7 @@ app.get('/', function(req, res) {
     res.send("Hi Backend is Ready!!");
 });
 
-app.post("/todo" , function(req, res) {
+app.post("/todo" , async function(req, res) {
     const createPayLoad = req.body;
     const parsedPayLoad = createTodo.safeParse(createPayLoad);
     if(!parsedPayLoad.success) {
@@ -21,13 +22,28 @@ app.post("/todo" , function(req, res) {
         })
         return;
     }
+
+    await todo.create({
+        title: createPayLoad.title ,
+        description: createPayLoad.description,
+        completed: false
+    })
+
+    res.json({
+        msg: "Todo Created"
+    })
 });
 
-app.get("/todos" , function (req, res) {
+app.get("/todos" , async function (req, res) {
+    let todos = await todo.find({});
+
+    res.json({
+        todos
+    })
 
 });
 
-app.put("/completed" , function (req, res) {
+app.put("/completed" , async function (req, res) {
     const updatePayLoad = req.body;
     const parsePayLoad = updateTodo.safeParse(updatePayLoad);
     if(!parsePayLoad.success){
@@ -36,6 +52,17 @@ app.put("/completed" , function (req, res) {
         })
         return;
     }
+
+    await todo.update({
+        _id: req.body.id
+    },
+{
+    completed: true
+});
+
+    res.json({
+        msg: "Todo marked as completed"
+    })
 })
 
 // error handling middleware 
